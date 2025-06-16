@@ -1,0 +1,56 @@
+version: 1
+send_anonymous_usage_stats: true
+project_id: "tap-frontapp"
+default_environment: test
+venv:
+  backend: uv
+environments:
+  - name: test
+plugins:
+  extractors:
+    - name: "tap-frontapp"
+      namespace: "tap_frontapp"
+      pip_url: -e .
+      capabilities:
+        - state
+        - catalog
+        - discover
+        - about
+        - stream-maps
+      settings:
+        - name: api_key
+          label: API Key
+          description: The API key to authenticate against the API service
+          kind: password
+          sensitive: true
+        - name: api_url
+          label: API URL
+          kind: string
+        - name: q_types
+          label: Types
+          description: Types to filter events. See https://dev.frontapp.com/reference/list-events
+          kind: array
+        - name: limit
+          label: Limit
+          description: Max number of results per page (max 15)
+          kind: integer
+        - name: sort_order
+          label: Sort Order
+          kind: string
+        - name: q_after
+          label: After
+          description: Timestamp in seconds with up to 3 decimal places. See https://dev.frontapp.com/reference/list-events
+          kind: string
+        - name: q_before
+          label: Before
+          description: Timestamp in seconds with up to 3 decimal places. See https://dev.frontapp.com/reference/list-events
+          kind: string
+        - name: rate_limit_quota_pct
+          label: Rate Limit Quota Percentage
+          description: Percentage of the rate limit to use
+          kind: integer
+
+  loaders:
+    - name: target-jsonl
+      variant: andyh1203
+      pip_url: target-jsonl
