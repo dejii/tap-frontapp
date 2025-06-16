@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import typing as t
+from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
 from singer_sdk import typing as th
@@ -47,6 +48,7 @@ class EventsStream(FrontAppStream):
         ),
         th.Property("type", th.StringType),
         th.Property("emitted_at", th.NumberType),
+        th.Property("emitted_timestamp", th.DateTimeType),
         th.Property("conversation", th.ObjectType(additional_properties=True)),
         th.Property("source", th.ObjectType(additional_properties=True)),
         th.Property("target", th.ObjectType(additional_properties=True)),
@@ -80,3 +82,14 @@ class EventsStream(FrontAppStream):
             if self.config.get("q_before") is not None:
                 params["q[before]"] = self.config.get("q_before")
         return params
+
+    def post_process(
+        self,
+        row: dict,
+        context: dict | None = None,  # noqa: ARG002
+    ) -> dict | None:
+        emitted_at = float(row.get("emitted_at"))  # type: ignore[arg-type]
+        emitted_timestamp = datetime.fromtimestamp(
+            emitted_at, tz=timezone.utc
+        ).isoformat()
+        return {"emitted_timestamp": emitted_timestamp, **row}
