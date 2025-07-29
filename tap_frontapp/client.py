@@ -96,7 +96,7 @@ class FrontAppStream(RESTStream):
             and rate_limit_used_pct > rate_limit_quota_pct
         ):
             seconds_to_wait = rate_limit_reset - current_time_seconds
-            seconds_to_wait = abs(seconds_to_wait) + 10
+            seconds_to_wait = abs(seconds_to_wait) + 2
             logging.warning(
                 f"Approximately {round(rate_limit_used_pct, 2)}% of the rate limit has been used. Sleeping for {seconds_to_wait} seconds to reset the rate limit. Rate limit quota: {rate_limit_quota_pct}%, Rate limit used: {rate_limit_used} requests, Rate limit limit: {rate_limit_limit} requests"
             )
